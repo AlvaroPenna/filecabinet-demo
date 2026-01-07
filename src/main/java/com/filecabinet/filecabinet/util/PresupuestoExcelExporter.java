@@ -1,7 +1,8 @@
 package com.filecabinet.filecabinet.util;
 
 import com.filecabinet.filecabinet.entidades.DetalleDocumento;
-import com.filecabinet.filecabinet.entidades.Factura;
+import com.filecabinet.filecabinet.entidades.Presupuesto;
+
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.util.IOUtils;
@@ -14,11 +15,11 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 
-public class FacturaExcelExporter {
+public class PresupuestoExcelExporter {
 
     private XSSFWorkbook workbook;
     private XSSFSheet sheet;
-    private Factura factura;
+    private Presupuesto presupuesto;
 
     // Color corporativo
     private static final XSSFColor COLOR_AZUL_RAP = new XSSFColor(new java.awt.Color(26, 68, 126),
@@ -27,7 +28,6 @@ public class FacturaExcelExporter {
     // Estilos
     private XSSFCellStyle styleHeaderTabla;
     private XSSFCellStyle styleDatos;
-    private XSSFCellStyle styleCurrency;
     private XSSFCellStyle styleBold;
     private XSSFCellStyle styleTotalLabel;
     private XSSFCellStyle styleTotalGrande;
@@ -39,8 +39,8 @@ public class FacturaExcelExporter {
     private XSSFFont fontBig;
     private XSSFFont fontNormal;
 
-    public FacturaExcelExporter(Factura factura) {
-        this.factura = factura;
+    public PresupuestoExcelExporter(Presupuesto presupuesto) {
+        this.presupuesto = presupuesto;
         workbook = new XSSFWorkbook();
     }
 
@@ -62,45 +62,31 @@ public class FacturaExcelExporter {
         styleBoldBig.setAlignment(HorizontalAlignment.LEFT);
         styleBoldBig.setWrapText(true);
 
-        // Estilo Negrita (Con ajuste de texto, para cabeceras generales)
         styleBold = workbook.createCellStyle();
         styleBold.setFont(fontBold);
         styleBold.setVerticalAlignment(VerticalAlignment.TOP);
         styleBold.setAlignment(HorizontalAlignment.LEFT);
         styleBold.setWrapText(true);
 
-        // NUEVO: Estilo Negrita SIN ajuste de texto (Para los totales: Base Imponible,
-        // etc.)
-        // Esto evita que se corte o cree espacios en blanco feos.
         styleTotalLabel = workbook.createCellStyle();
         styleTotalLabel.setFont(fontBold);
         styleTotalLabel.setVerticalAlignment(VerticalAlignment.TOP);
         styleTotalLabel.setAlignment(HorizontalAlignment.LEFT);
-        styleTotalLabel.setWrapText(false); // IMPORTANTE: No permite salto de línea
+        styleTotalLabel.setWrapText(false);
 
-        // Estilo Texto Normal
         styleDatos = workbook.createCellStyle();
         styleDatos.setFont(fontNormal);
         styleDatos.setVerticalAlignment(VerticalAlignment.TOP);
         styleDatos.setAlignment(HorizontalAlignment.LEFT);
         styleDatos.setWrapText(true);
 
-        // Estilo Moneda
-        /*styleCurrency = workbook.createCellStyle();
-        styleCurrency.setFont(fontNormal);
-        styleCurrency.setVerticalAlignment(VerticalAlignment.TOP);
-        DataFormat format = workbook.createDataFormat();
-        styleCurrency.setDataFormat(format.getFormat("#,##0.00 \"€\""));*/
-
-        // Estilo Moneda Centrado (Para PRECIO y TOTAL)
         styleCurrencyCenter = workbook.createCellStyle();
         styleCurrencyCenter.setFont(fontNormal);
         styleCurrencyCenter.setVerticalAlignment(VerticalAlignment.TOP);
-        styleCurrencyCenter.setAlignment(HorizontalAlignment.CENTER); // <--- AQUÍ ESTÁ LA CLAVE
-        DataFormat format = workbook.createDataFormat(); // Asegúrate de tener 'format' disponible o créalo
+        styleCurrencyCenter.setAlignment(HorizontalAlignment.CENTER);
+        DataFormat format = workbook.createDataFormat();
         styleCurrencyCenter.setDataFormat(format.getFormat("#,##0.00 \"€\""));
 
-        // Estilo Header Tabla
         styleHeaderTabla = workbook.createCellStyle();
         XSSFFont fontHeader = workbook.createFont();
         fontHeader.setBold(true);
@@ -112,7 +98,6 @@ public class FacturaExcelExporter {
         styleHeaderTabla.setAlignment(HorizontalAlignment.CENTER);
         styleHeaderTabla.setVerticalAlignment(VerticalAlignment.CENTER);
 
-        // Estilo Total Grande
         XSSFFont fontTotal = workbook.createFont();
         fontTotal.setBold(true);
         fontTotal.setFontHeightInPoints((short) 14);
@@ -126,14 +111,13 @@ public class FacturaExcelExporter {
         styleDatosCenter = workbook.createCellStyle();
         styleDatosCenter.setFont(fontNormal);
         styleDatosCenter.setVerticalAlignment(VerticalAlignment.TOP);
-        styleDatosCenter.setAlignment(HorizontalAlignment.CENTER); // <--- AQUÍ ESTÁ LA CLAVE
+        styleDatosCenter.setAlignment(HorizontalAlignment.CENTER);
         styleDatosCenter.setWrapText(true);
 
     }
 
     private void insertLogo() {
         try {
-            // 1. Cargar la imagen (Tu código de carga parece correcto, lo mantenemos)
             InputStream is = getClass().getClassLoader().getResourceAsStream("static/imagenes/logo.png");
             if (is == null)
                 is = getClass().getClassLoader().getResourceAsStream("static/imagenes/logo.png");
@@ -142,19 +126,11 @@ public class FacturaExcelExporter {
 
             if (is != null) {
                 byte[] bytes = IOUtils.toByteArray(is);
-                // Es importante usar el tipo correcto. Si tu logo es JPG, cambia a
-                // PICTURE_TYPE_JPEG
                 int pictureIdx = workbook.addPicture(bytes, Workbook.PICTURE_TYPE_PNG);
                 is.close();
 
                 Drawing<?> drawing = sheet.createDrawingPatriarch();
-
-                // Usamos XSSFClientAnchor para asegurarnos de que funciona bien en .xlsx
                 XSSFClientAnchor anchor = workbook.getCreationHelper().createClientAnchor();
-
-                // --- POSICIONAMIENTO EXACTO (ESTIRAR PARA ENCAJAR) ---
-
-                // ESQUINA SUPERIOR IZQUIERDA: Inicio de Columna 0 (A), Fila 0
                 anchor.setCol1(0); // Columna 0 (A)
                 anchor.setRow1(0); // Fila 0
                 anchor.setDx1(0); // Pegado al borde exacto
@@ -172,7 +148,7 @@ public class FacturaExcelExporter {
     }
 
     private void writeHeaderLine() {
-        sheet = workbook.createSheet("Factura");
+        sheet = workbook.createSheet("Presupuesto");
         initStyles();
 
         PrintSetup printSetup = sheet.getPrintSetup();
@@ -197,57 +173,57 @@ public class FacturaExcelExporter {
         insertLogo();
 
         Row row1 = getOrCreateRow(1);
-        createCell(row1, 2, factura.getUsuario().getNombre() + factura.getUsuario().getApellidos(), styleBoldBig);
+        createCell(row1, 2, presupuesto.getUsuario().getNombre() + presupuesto.getUsuario().getApellidos(), styleBoldBig);
         sheet.addMergedRegion(new CellRangeAddress(1, 1, 2, 3));
 
         Row row2 = getOrCreateRow(2);
-        createCell(row2, 2, "CIF: " + factura.getUsuario().getCif(), styleDatos);
+        createCell(row2, 2, "CIF: " + presupuesto.getUsuario().getCif(), styleDatos);
         sheet.addMergedRegion(new CellRangeAddress(2, 2, 2, 3));
 
         Row row3 = getOrCreateRow(3);
-        createCell(row3, 2, "Tel: " + factura.getUsuario().getTelefono(), styleDatos);
+        createCell(row3, 2, "Tel: " + presupuesto.getUsuario().getTelefono(), styleDatos);
         sheet.addMergedRegion(new CellRangeAddress(3, 3, 2, 3));
 
         Row row4 = getOrCreateRow(4);
-        createCell(row4, 2, factura.getUsuario().getEmail(), styleDatos);
+        createCell(row4, 2, presupuesto.getUsuario().getEmail(), styleDatos);
         sheet.addMergedRegion(new CellRangeAddress(4, 4, 2, 3));
 
         Row row5 = getOrCreateRow(5);
-        createCell(row5, 2, factura.getUsuario().getDomicilio(), styleDatos);
+        createCell(row5, 2, presupuesto.getUsuario().getDomicilio(), styleDatos);
         sheet.addMergedRegion(new CellRangeAddress(5, 5, 2, 3));
 
         Row row6 = getOrCreateRow(6);
-        createCell(row6, 2, factura.getUsuario().getCodigoPostal() + "-" + factura.getUsuario().getPoblacion()
-         + " (" + factura.getUsuario().getProvincia() + ")", styleDatos);
+        createCell(row6, 2, presupuesto.getUsuario().getCodigoPostal() + "-" + presupuesto.getUsuario().getPoblacion()
+         + " (" + presupuesto.getUsuario().getProvincia() + ")", styleDatos);
         sheet.addMergedRegion(new CellRangeAddress(6, 6, 2, 3));
 
         Row row8 = getOrCreateRow(8);
         createCell(row8, 0, "CLIENTE:", styleBold);
         
         Row row9 = getOrCreateRow(9);
-        createCell(row9, 0, factura.getCliente().getNombre() + " " + factura.getCliente().getApellidos(), styleDatos);
+        createCell(row9, 0, presupuesto.getCliente().getNombre() + " " + presupuesto.getCliente().getApellidos(), styleDatos);
 
         Row row10 = getOrCreateRow(10);
-        createCell(row10, 0, "CIF: " + factura.getCliente().getCif(), styleDatos);
-        createCell(row10, 2, "FACTURA Nº: " + factura.getNumFactura(), styleBoldBig);
+        createCell(row10, 0, "CIF: " + presupuesto.getCliente().getCif(), styleDatos);
+        createCell(row10, 2, "PRESUPUESTO Nº: " + presupuesto.getNumPresupuesto(), styleBoldBig);
         sheet.addMergedRegion(new CellRangeAddress(10, 10, 2, 3));
 
         String fechaTexto = "---";
-        if (factura.getFechaEmision() != null) {
+        if (presupuesto.getFechaEmision() != null) {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-            fechaTexto = sdf.format(factura.getFechaEmision());
+            fechaTexto = sdf.format(presupuesto.getFechaEmision());
         }
 
         Row row11 = getOrCreateRow(11);
-        createCell(row11, 0, "TEL: " + factura.getCliente().getTelefono(), styleDatos);
+        createCell(row11, 0, "TEL: " + presupuesto.getCliente().getTelefono(), styleDatos);
         createCell(row11, 2, "FECHA: " + fechaTexto, styleBoldBig);
         sheet.addMergedRegion(new CellRangeAddress(11, 11, 2, 3));
 
         Row row12 = getOrCreateRow(12);
-        createCell(row12, 0, factura.getCliente().getDireccion(), styleDatos);
+        createCell(row12, 0, presupuesto.getCliente().getDireccion(), styleDatos);
 
         Row row13 = getOrCreateRow(13);
-        createCell(row13, 0, factura.getCliente().getCodigoPostal() + "-" + factura.getCliente().getCiudad(), styleDatos);
+        createCell(row13, 0, presupuesto.getCliente().getCodigoPostal() + "-" + presupuesto.getCliente().getCiudad(), styleDatos);
     }
 
     private Row getOrCreateRow(int index) {
@@ -272,8 +248,8 @@ public class FacturaExcelExporter {
     private void writeDataLines() {
         int rowCount = 17;
 
-        if (factura.getDetalles() != null && !factura.getDetalles().isEmpty()) {
-            for (DetalleDocumento detalle : factura.getDetalles()) {
+        if (presupuesto.getDetalles() != null && !presupuesto.getDetalles().isEmpty()) {
+            for (DetalleDocumento detalle : presupuesto.getDetalles()) {
                 Row row = sheet.createRow(rowCount++);
                 int columnCount = 0;
 
@@ -312,28 +288,6 @@ public class FacturaExcelExporter {
                 createCell(row, columnCount++, subtotal, styleCurrencyCenter);
             }
 
-            double descuento = (factura.getDescuento() != null) ? factura.getDescuento().doubleValue() : 0.0;
-            if (descuento > 0) {
-                Row row = sheet.createRow(rowCount++); // Usamos el mismo contador para seguir abajo
-                int columnCount = 0;
-
-                // Columna 0: Título "Descuento"
-                Cell cellDesc = row.createCell(columnCount++);
-                XSSFRichTextString richString = new XSSFRichTextString("Descuento");
-                richString.applyFont(fontBold); // Lo ponemos en negrita para diferenciarlo
-                cellDesc.setCellValue(richString);
-                cellDesc.setCellStyle(styleDatos);
-
-                // Columna 1: Cantidad (Vacía visualmente)
-                createCell(row, columnCount++, "", styleDatos);
-
-                // Columna 2: Precio Unitario (Vacía visualmente)
-                createCell(row, columnCount++, "", styleCurrency);
-
-                // Columna 3: El Total restando (Importante el signo menos "-")
-                createCell(row, columnCount++, -descuento, styleCurrencyCenter);
-            }
-
         } else {
             Row row = sheet.createRow(rowCount++);
             createCell(row, 0, "Sin conceptos", styleDatos);
@@ -343,27 +297,26 @@ public class FacturaExcelExporter {
         int filaMinimaPie = 39;
 
         if (rowCount < filaMinimaPie) {
+            // ESCENARIO A: Pocos productos (ej: terminamos en fila 20).
+            // Saltamos directamente a la fila 42 para que el pie quede abajo estéticamente.
             rowCount = filaMinimaPie;
         } else {
+            // ESCENARIO B: Muchos productos (ej: terminamos en fila 50).
+            // NO volvemos a la 42 (porque sobrescribiríamos datos).
+            // Simplemente dejamos un par de líneas de separación y escribimos a continuación.
+            // Excel creará la página 2 automáticamente gracias al printSetup.setFitHeight(0).
             rowCount += 2; 
         }
-        Row rowPago = sheet.createRow(rowCount);
-        createCell(rowPago, 0, "Modo de pago: TRANSFERENCIA BANCARIA BBVA", styleBold);
-        sheet.addMergedRegion(new CellRangeAddress(rowCount, rowCount, 0, 1));
-
-        // IBAN
-        Row rowIban = sheet.createRow(rowCount + 1);
-        createCell(rowIban, 0, "Nº de cuenta: ES86 0182 0973 6002 0171 6260", styleDatos);
-        sheet.addMergedRegion(new CellRangeAddress(rowCount + 1, rowCount + 1, 0, 1));
 
         // Base Imponible
+        Row rowPago = sheet.createRow(rowCount);
         createCell(rowPago, 2, "BASE IMPONIBLE:", styleTotalLabel);
-        createCell(rowPago, 3, getSafeDouble(factura.getTotal_bruto()), styleCurrencyCenter);
+        createCell(rowPago, 3, getSafeDouble(presupuesto.getTotal_bruto()), styleCurrencyCenter);
 
         // IVA
         Row rowIva = getOrCreateRow(rowCount + 1);
-        createCell(rowIva, 2, "I.V.A. " + factura.getTipo_iva() + "%:", styleTotalLabel);
-        createCell(rowIva, 3, getSafeDouble(factura.getTotal_iva()), styleCurrencyCenter);
+        createCell(rowIva, 2, "I.V.A. " + presupuesto.getTipo_iva() + "%:", styleTotalLabel);
+        createCell(rowIva, 3, getSafeDouble(presupuesto.getTotal_iva()), styleCurrencyCenter);
 
         // Total Final
         Row rowTotal = getOrCreateRow(rowCount + 2);
@@ -379,7 +332,7 @@ public class FacturaExcelExporter {
         styleTituloTotal.setAlignment(HorizontalAlignment.RIGHT);
         cellTituloTotal.setCellStyle(styleTituloTotal);
 
-        createCell(rowTotal, 3, getSafeDouble(factura.getTotal_neto()), styleTotalGrande);
+        createCell(rowTotal, 3, getSafeDouble(presupuesto.getTotal_neto()), styleTotalGrande);
     }
 
     private void createCell(Row row, int columnCount, Object value, CellStyle style) {

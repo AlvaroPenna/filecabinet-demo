@@ -177,7 +177,7 @@ if (facturaForm) {
             .catch(error => {
                 console.error(error);
                 messageElement.textContent = 'Error al guardar.';
-                alert("Hubo un error al guardar la factura");
+                alert("Hubo un error al guardar la Factura");
             });
     });
 }

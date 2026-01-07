@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.security.access.AccessDeniedException; // <--- FALTABA ESTE IMPORT
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,24 +42,29 @@ public class FacturaService {
         this.proyectoRepository = proyectoRepository;
     }
 
+    // SEGURIDAD: Buscar solo facturas del usuario logueado
     @Transactional(readOnly = true)
-    public List<FacturaDto> getAllFacturas() {
-        return facturaRepository.findAll().stream()
+    public List<FacturaDto> getAllFacturasByUserId(Long userId) {
+        return facturaRepository.findByUsuarioId(userId).stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
 
+    // SEGURIDAD: Buscar factura solo si pertenece al usuario logueado
     @Transactional(readOnly = true)
-    public Optional<FacturaDto> getFacturaById(Long id) {
-        return facturaRepository.findById(id).map(this::toDto);
+    public Optional<FacturaDto> getFacturaByIdAndUserId(Long id, Long userId) {
+        return facturaRepository.findByIdAndUsuarioId(id, userId).map(this::toDto);
     }
 
     @Transactional
     public FacturaDto createFactura(FacturaDto facturaDto, Long userId) {
         String numFactura = facturaDto.getNumFactura();
+        
+        // Verificamos si el número ya existe para este usuario
         if(facturaRepository.existsByNumFacturaAndUsuarioId(numFactura, userId)){
             throw new IllegalStateException("La factura con número " + numFactura + " ya ha sido registrada");
         }
+        
         Factura factura = toEntity(facturaDto);
 
         if (userId != null) {
@@ -67,6 +72,7 @@ public class FacturaService {
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + userId));
             factura.setUsuario(usuario);
         }
+        
         List<DetalleDocumento> detallesEntidades = mapDetallesToEntity(facturaDto.getDetalles(), factura);
         factura.setDetalles(detallesEntidades);
 
@@ -74,9 +80,11 @@ public class FacturaService {
         return toDto(savedFactura);
     }
 
+    // SEGURIDAD: Actualizar solo si la factura pertenece al usuario (findByIdAndUsuarioId)
     @Transactional
-    public Optional<FacturaDto> updateFactura(Long id, FacturaDto facturaDetails) {
-        return facturaRepository.findById(id).map(factura -> {
+    public Optional<FacturaDto> updateFactura(Long id, FacturaDto facturaDetails, Long userId) {
+        return facturaRepository.findByIdAndUsuarioId(id, userId).map(factura -> {
+            
             factura.setNumFactura(facturaDetails.getNumFactura());
             factura.setEstadoPago(facturaDetails.getEstadoPago());
             factura.setDescuento(facturaDetails.getDescuento());
@@ -84,9 +92,20 @@ public class FacturaService {
             factura.setTotal_bruto(facturaDetails.getTotal_bruto());
             factura.setTotal_iva(facturaDetails.getTotal_iva());
             factura.setTotal_neto(facturaDetails.getTotal_neto());
+            factura.setTipo_iva(facturaDetails.getTipo_iva());
+
+            // Actualizar cliente/proyecto si cambian
+            if(facturaDetails.getCliente_id() != null) {
+                 factura.setCliente(clienteRepository.findById(facturaDetails.getCliente_id()).orElse(null));
+            }
+            if(facturaDetails.getProyecto_id() != null) {
+                 factura.setProyecto(proyectoRepository.findById(facturaDetails.getProyecto_id()).orElse(null));
+            }
+
             List <DetalleDocumentoDto> detallesDto = facturaDetails.getDetalles();
             if(detallesDto != null){
                 List<DetalleDocumento> detallesExistentes = factura.getDetalles();
+                
                 for(DetalleDocumentoDto detalleDto : detallesDto){
                     Long detalleid = detalleDto.getId();
                     if(detalleid != null){
@@ -100,28 +119,53 @@ public class FacturaService {
                             detalle.setDescripcion(detalleDto.getDescripcion());
                             detalle.setCantidad(detalleDto.getCantidad());
                             detalle.setPrecioUnitario(detalleDto.getPrecioUnitario());
-                        } else {
-                            throw new RuntimeException("Detalle con ID " + detalleid + " no encontrado en Factura " + id);
-                        }
-                        // Nota: factura.setDetalles no es estrictamente necesario si modificas la lista existente referenciada, 
-                        // pero no hace daño dejarlo.
-                        factura.setDetalles(detallesExistentes);
+                            detalle.setSubTotal(detalleDto.getSubTotal());
+                        } 
+                    } else {
+                        // Detalle nuevo en edición
+                        DetalleDocumento nuevo = toDetalleEntity(detalleDto);
+                        nuevo.setDocumentoComercial(factura);
+                        detallesExistentes.add(nuevo);
                     }
                 }
+                // Limpieza de huérfanos (opcional pero recomendado): 
+                // Si en el DTO faltan detalles que sí estaban en DB, deberían borrarse.
+                // Tu lógica actual solo actualiza o agrega, no borra detalles quitados en el front.
+                // Para simplificar, mantenemos tu lógica actual.
+                
+                factura.setDetalles(detallesExistentes);
             }
             
             return toDto(facturaRepository.save(factura));
         });
     }
 
+    // SEGURIDAD: Borrar solo si pertenece al usuario
     @Transactional
-    public boolean deleteFactura(Long id) {
-        if (facturaRepository.existsById(id)) {
+    public boolean deleteFactura(Long id, Long userId) {
+        if (facturaRepository.existsByIdAndUsuarioId(id, userId)) {
             facturaRepository.deleteById(id);
             return true;
         }
         return false;
     }
+
+    @Transactional(readOnly = true)
+    public void generarExcel(Long id, HttpServletResponse response, CustomUserDetails userDetails) throws IOException {
+        // SEGURIDAD: Usamos el método seguro. Si no encuentra la factura para ese usuario, lanza excepción.
+        Factura factura = facturaRepository.findByIdAndUsuarioId(id, userDetails.getUserId())
+             .orElseThrow(() -> new AccessDeniedException("No tienes permiso para descargar esta factura o no existe."));
+
+        response.setContentType("application/octet-stream");
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=Factura_" + factura.getNumFactura() + ".xlsx";
+        response.setHeader(headerKey, headerValue);
+
+        FacturaExcelExporter exporter = new FacturaExcelExporter(factura);
+        exporter.export(response);
+    }
+
+    // --- MAPPERS ---
 
     public Factura toEntity(FacturaDto dto){
         Factura entity = new Factura();
@@ -134,13 +178,11 @@ public class FacturaService {
         entity.setTotal_neto(dto.getTotal_neto());
         entity.setTipo_iva(dto.getTipo_iva());
         if(dto.getCliente_id() != null){
-            Cliente cliente = clienteRepository.findById(dto.getCliente_id())
-                                            .orElse(null);
+            Cliente cliente = clienteRepository.findById(dto.getCliente_id()).orElse(null);
             entity.setCliente(cliente); 
         }
         if (dto.getProyecto_id() != null) {
-            Proyecto proyecto = proyectoRepository.findById(dto.getProyecto_id())
-                                            .orElse(null);
+            Proyecto proyecto = proyectoRepository.findById(dto.getProyecto_id()).orElse(null);
             entity.setProyecto(proyecto);
         }
         return entity;
@@ -148,7 +190,7 @@ public class FacturaService {
 
     public FacturaDto toDto(Factura entity) {
         FacturaDto dto = new FacturaDto();
-        dto.setId(entity.getId()); // Es útil devolver el ID de la factura
+        dto.setId(entity.getId());
         dto.setNumFactura(entity.getNumFactura());
         dto.setEstadoPago(entity.getEstadoPago());
         dto.setDescuento(entity.getDescuento());
@@ -161,19 +203,15 @@ public class FacturaService {
         if (entity.getCliente() != null) {
             dto.setCliente_id(entity.getCliente().getId());
         }
-        
         if (entity.getProyecto() != null) {
             dto.setProyecto_id(entity.getProyecto().getId());
         }
-
-        // CORRECCIÓN: Mapear los detalles de vuelta al DTO
         if (entity.getDetalles() != null) {
             List<DetalleDocumentoDto> detallesDto = entity.getDetalles().stream()
                 .map(this::toDetalleDto)
                 .collect(Collectors.toList());
             dto.setDetalles(detallesDto);
         }
-
         return dto;
     }
 
@@ -190,7 +228,6 @@ public class FacturaService {
         return entity;
     }
 
-    // CORRECCIÓN: Descomentar este método, es necesario para toDto
     private DetalleDocumentoDto toDetalleDto(DetalleDocumento entity) {
         DetalleDocumentoDto dto = new DetalleDocumentoDto();
         dto.setId(entity.getId());
@@ -212,37 +249,5 @@ public class FacturaService {
                 entity.setDocumentoComercial(factura); 
                 return entity;
             }).collect(Collectors.toList()); 
-    }
-
-    @Transactional(readOnly = true)
-    public void generarExcel(Long id, HttpServletResponse response, CustomUserDetails userDetails) throws IOException {
-        // 1. Buscamos la factura
-        Factura factura = facturaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Factura no encontrada"));
-
-        // 2. VALIDACIÓN DE SEGURIDAD (Dueño O Admin):
-        
-        // A) Verificamos si es el dueño
-        boolean esDuenio = factura.getUsuario() != null && 
-                           factura.getUsuario().getId().equals(userDetails.getUserId());
-        
-        // B) Verificamos si tiene rol de ADMIN
-        boolean esAdmin = userDetails.getAuthorities().stream()
-                            .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-
-        // Si NO es dueño Y TAMPOCO es admin, lanzamos error
-        if (!esDuenio && !esAdmin) {
-            throw new AccessDeniedException("No tienes permiso para descargar esta factura.");
-        }
-
-        // 3. Configuración de respuesta HTTP
-        response.setContentType("application/octet-stream");
-        String headerKey = "Content-Disposition";
-        String headerValue = "attachment; filename=Factura_" + factura.getNumFactura() + ".xlsx";
-        response.setHeader(headerKey, headerValue);
-
-        // 4. Generar Excel
-        FacturaExcelExporter exporter = new FacturaExcelExporter(factura);
-        exporter.export(response);
     }
 }

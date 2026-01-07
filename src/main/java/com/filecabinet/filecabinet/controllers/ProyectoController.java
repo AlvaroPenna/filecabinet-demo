@@ -1,18 +1,12 @@
 package com.filecabinet.filecabinet.controllers;
 
 import java.util.List;
-import java.util.Optional;
+
+import jakarta.validation.Valid; // <--- Importante
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.filecabinet.filecabinet.config.CustomUserDetails;
 import com.filecabinet.filecabinet.dto.ProyectoDto;
@@ -30,46 +24,55 @@ public class ProyectoController {
 
     @GetMapping
     public ResponseEntity<List<ProyectoDto>> getAllProyectos(@AuthenticationPrincipal CustomUserDetails userDetails) {
-            Long userId = userDetails.getUserId();
-            List<ProyectoDto> proyectos = proyectoService.getAllProyectos(userId);
-            return ResponseEntity.ok(proyectos);
+        Long userId = userDetails.getUserId();
+        List<ProyectoDto> proyectos = proyectoService.getAllProyectos(userId);
+        return ResponseEntity.ok(proyectos);
     }
 
-    @GetMapping("/proyectoId")
-    public ResponseEntity<ProyectoDto> getProyectoById(@AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long proyectoId) {
-                Long userId = userDetails.getUserId();
-                Optional<ProyectoDto> dto = proyectoService.getProyectoById(proyectoId, userId);
-                return dto.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    // CORRECCIÓN: Usar /{id} para que sea variable, no texto fijo
+    @GetMapping("/{id}")
+    public ResponseEntity<ProyectoDto> getProyectoById(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long id) { // Cambiado a 'id' para coincidir con la URL
+        
+        Long userId = userDetails.getUserId();
+        return proyectoService.getProyectoById(id, userId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<ProyectoDto> createProyecto(@RequestBody ProyectoDto proyectoDto,
+    public ResponseEntity<ProyectoDto> createProyecto(
+            @Valid @RequestBody ProyectoDto proyectoDto, // Agregado @Valid
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-                Long userId = userDetails.getUserId();
-                ProyectoDto createdDto = proyectoService.createProyecto(proyectoDto, userId);
-                return ResponseEntity.ok(createdDto);
+        
+        Long userId = userDetails.getUserId();
+        ProyectoDto createdDto = proyectoService.createProyecto(proyectoDto, userId);
+        return ResponseEntity.ok(createdDto);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProyectoDto> updateProyecto(@AuthenticationPrincipal CustomUserDetails userDetails,
-        @PathVariable Long proyectoId,
-        @RequestBody ProyectoDto proyectoDetails) {
-            Long userId = userDetails.getUserId();
-            Optional<ProyectoDto> updatedDto = proyectoService.updateProyecto(
-            proyectoId, userId, proyectoDetails);
-            return updatedDto.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<ProyectoDto> updateProyecto(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long id, // Cambiado nombre para coincidir con /{id}
+            @Valid @RequestBody ProyectoDto proyectoDetails) { // Agregado @Valid
+        
+        Long userId = userDetails.getUserId();
+        return proyectoService.updateProyecto(id, userId, proyectoDetails)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/{proyectoId}")
-    public ResponseEntity<Void> deleteProyecto(@AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long proyectoId) {
-                Long userId = userDetails.getUserId();
-                boolean isDeleted = proyectoService.deleteProyecto(proyectoId, userId);
-                if (isDeleted) {
-                    return ResponseEntity.noContent().build(); 
-                } else {
-                    return ResponseEntity.notFound().build(); 
-                }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProyecto(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long id) { // Simplificado a 'id'
+        
+        Long userId = userDetails.getUserId();
+        if (proyectoService.deleteProyecto(id, userId)) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

@@ -24,8 +24,9 @@ public class EmpleadoService {
         this.usuarioRepository = usuarioRepository;
     }
 
+    // CORRECCIÓN: Typo "getAllTrabajores" -> "getAllTrabajadores"
     @Transactional(readOnly = true)
-    public List<EmpleadoDto> getAllTrabajores(Long userId){
+    public List<EmpleadoDto> getAllTrabajadores(Long userId){
         return empleadoRepository.findByUsuarioId(userId).stream()
             .map(this::toDto)
             .collect(Collectors.toList());
@@ -39,14 +40,20 @@ public class EmpleadoService {
     @Transactional
     public EmpleadoDto createTrabajador(EmpleadoDto trabajadorDto, Long userId){
         String empleadoNif = trabajadorDto.getNif();
+        
         if(empleadoRepository.existsByNifAndUsuarioId(empleadoNif, userId)){
             throw new IllegalStateException("El empleado con nif " + empleadoNif +" ya ha sido registrado");
         }
+        
         Empleado trabajador = toEntity(trabajadorDto);
+        
+        // CORRECCIÓN: Es mejor lanzar excepción si el usuario no existe que dejarlo null
         if(userId != null){
-            Usuario usuario = usuarioRepository.findById(userId).orElse(null);
+            Usuario usuario = usuarioRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
             trabajador.setUsuario(usuario);
         }
+        
         Empleado savedTrabajador = empleadoRepository.save(trabajador);
         return toDto(savedTrabajador);
     }
@@ -54,7 +61,10 @@ public class EmpleadoService {
     @Transactional
     public Optional<EmpleadoDto> updateTrabajador(Long trabajadorId, Long userId, EmpleadoDto trabajadorDetails){
         return empleadoRepository.findByIdAndUsuarioId(trabajadorId, userId).map(trabajador -> {
-            trabajador.setId(trabajadorDetails.getId());
+            
+            // CORRECCIÓN CRÍTICA: Eliminada la línea trabajador.setId(...)
+            // Nunca debemos cambiar el ID de una entidad existente.
+            
             trabajador.setNombre(trabajadorDetails.getNombre());
             trabajador.setApellidos(trabajadorDetails.getApellidos());
             trabajador.setNif(trabajadorDetails.getNif());
@@ -63,26 +73,30 @@ public class EmpleadoService {
             trabajador.setDireccion(trabajadorDetails.getDireccion());
             trabajador.setCiudad(trabajadorDetails.getCiudad());
             trabajador.setCodigoPostal(trabajadorDetails.getCodigoPostal());
+            
             return toDto(empleadoRepository.save(trabajador));
         });
     }
 
     @Transactional
     public boolean deleteTrabajador(Long trabajadorId, Long userId){
-        Optional<Empleado> trabajador = empleadoRepository.findByIdAndUsuarioId(trabajadorId, userId);
-        if (trabajador.isPresent()) {
-            empleadoRepository.delete(trabajador.get());
+        // Simplificación: existsByIdAndUsuarioId es más eficiente si solo vas a borrar
+        if (empleadoRepository.existsByIdAndUsuarioId(trabajadorId, userId)) {
+            empleadoRepository.deleteById(trabajadorId);
             return true;
         }
         return false;
     }
+
+    // --- MAPPERS ---
 
     private Empleado toEntity(EmpleadoDto dto){
         if(dto == null){
             return null;
         }
         Empleado entity = new Empleado();
-        entity.setId(dto.getId());
+        // NOTA: Al crear, es mejor NO setear el ID y dejar que la DB lo genere.
+        // Si viene un ID en el DTO para creación, se ignora o se maneja aparte.
         entity.setNombre(dto.getNombre());
         entity.setApellidos(dto.getApellidos());
         entity.setNif(dto.getNif());

@@ -24,20 +24,20 @@
             <input type="text" id="numero" name="numero">
         </div>
         <div class="form-group">
-            <label for="cliente">Cliente:</label>
-            <input type="text" id="cliente" name="cliente" list="lista-clientes" placeholder="Busca un cliente..." required autocomplete="off">
-            <input type="hidden" id="cliente_id" name="cliente_id">
-            <datalist id="lista-clientes"></datalist>
-        </div>
-       <div class="form-group">
-            <label for="proyecto">Proyecto:</label>
-            <input type="text" id="proyecto" name="proyecto" list="lista-proyectos" placeholder="Busca un proyecto..." required autocomplete="off">
-            <input type="hidden" id="proyecto_id" name="proyecto_id">
-            <datalist id="lista-proyectos"></datalist>
-        </div>
+                <label for="cliente">Cliente:</label>
+                <input type="text" id="cliente" name="cliente" list="lista-clientes" placeholder="Busca un cliente..." required autocomplete="off">
+                <input type="hidden" id="cliente_id" name="cliente_id">
+                <datalist id="lista-clientes"></datalist>
+            </div>
+            <div class="form-group">
+                <label for="proyecto">Proyecto:</label>
+                <input type="text" id="proyecto" name="proyecto" list="lista-proyectos" placeholder="Busca un proyecto..." required autocomplete="off">
+                <input type="hidden" id="proyecto_id" name="proyecto_id">
+                <datalist id="lista-proyectos"></datalist>
+            </div>
         <div class="form-group">
             <label for="importe_sin_iva">Importe Sin Iva:</label>
-            <input type="number" id="importe_sin_iva" name="importe_sin_iva" step="0.01" required>
+            <input type="text" id="importe_sin_iva" name="importe_sin_iva" step="0.01" required oninput="this.value = this.value.replace(/[^0-9.,]/g, '')">
         </div>
         <div class="form-group">
             <label>Tipo de IVA:</label>
@@ -56,6 +56,6 @@
         </div>
     </form>
 </div>
-<script src="/js/gastos.js"></script>
+<script src="/js/addGastos.js"></script>
 </body>
 </html>

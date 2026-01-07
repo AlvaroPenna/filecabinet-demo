@@ -17,6 +17,8 @@ import com.filecabinet.filecabinet.config.CustomUserDetails;
 import com.filecabinet.filecabinet.dto.ClienteDto;
 import com.filecabinet.filecabinet.service.ClienteService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/clientes")
 public class ClienteController {
@@ -47,7 +49,7 @@ public class ClienteController {
 
     @PostMapping
     public ResponseEntity<ClienteDto> createCliente(
-        @RequestBody ClienteDto clienteDto,
+        @Valid @RequestBody ClienteDto clienteDto,
         @AuthenticationPrincipal CustomUserDetails userDetails){
             Long userId = userDetails.getUserId();
             ClienteDto newCliente = clientesService.createCliente(clienteDto, userId);
@@ -56,7 +58,7 @@ public class ClienteController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ClienteDto> updateCliente(@PathVariable Long id, 
-            @RequestBody ClienteDto clienteDto,
+            @Valid @RequestBody ClienteDto clienteDto,
             @AuthenticationPrincipal CustomUserDetails userDetails){
 
         Long userId = userDetails.getUserId();

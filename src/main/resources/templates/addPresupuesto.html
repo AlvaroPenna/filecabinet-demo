@@ -24,21 +24,21 @@
         </div>
         
         <div class="form-group">
-            <label for="cliente">Cliente:</label>
-            <select id="cliente" name="cliente"></select>
-        </div>
-        <div class="form-group">
-            <label for="proyecto">Proyecto:</label>
-            <select id="proyecto" name="proyecto"></select>
-        </div>
+                <label for="cliente">Cliente:</label>
+                <input type="text" id="cliente" name="cliente" list="lista-clientes" placeholder="Busca un cliente..." required autocomplete="off">
+                <input type="hidden" id="cliente_id" name="cliente_id">
+                <datalist id="lista-clientes"></datalist>
+            </div>
+            <div class="form-group">
+                <label for="proyecto">Proyecto:</label>
+                <input type="text" id="proyecto" name="proyecto" list="lista-proyectos" placeholder="Busca un proyecto..." required autocomplete="off">
+                <input type="hidden" id="proyecto_id" name="proyecto_id">
+                <datalist id="lista-proyectos"></datalist>
+            </div>
 
         <fieldset class="form-group" style="border: none; padding: 0; margin-bottom: 0;">
             <legend style="font-weight: 600; color: #2c3e50; margin-bottom: 15px;">Detalles / Líneas de Factura</legend>
             <div id="detallesContainer">
-                <p id="detalle-note" style="font-size: 0.9em; color: #7f8c8d; margin-bottom: 15px;">
-                    *Nota: Esta sección ahora es dinámica. Se enviarán todos los detalles agregados.
-                </p>
-                
                 <div class="detalle-item" data-index="1">
                     <div class="form-group">
                         <label for="trabajo">Trabajo:</label>
@@ -48,19 +48,19 @@
                         <label for="descripcion">Descripción de Detalle:</label>
                         <input type="text" id="descripcion" name="detalle-descripcion">
                     </div>
-                    <div class="form-group">
-                        <label for="cantidad">Cantidad:</label>
-                        <input type="number" id="cantidad" name="detalle-cantidad" min="1">
-                    </div>
-                    <div class="form-group">
-                        <label for="precioUnitario">Precio Unitario:</label>
-                        <input type="number" id="precioUnitario" name="detalle-precioUnitario" step="0.01">
-                    </div>
-                    
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="subtotal-1">Subtotal:</label>
-                        <input type="number" id="subtotal-1" name="detalle-subtotal" step="0.01" readonly>
-                    </div>
+                    <div class="form-group fila-calculos">
+                        <div class="columna-dato">
+                            <label for="cantidad">Cantidad:</label>
+                            <input type="text" id="cantidad" name="detalle-cantidad" min="1" oninput="this.value = this.value.replace(/[^0-9.,]/g, '')">
+                        </div>
+                        <div class="columna-dato">
+                            <label for="precioUnitario">Precio Unitario:</label>
+                            <input type="text" id="precioUnitario" name="detalle-precioUnitario" step="0.01" oninput="this.value = this.value.replace(/[^0-9.,]/g, '')">
+                        </div>
+                        <div class="columna-dato" style="margin-bottom: 0;">
+                            <label for="subtotal-1">Subtotal:</label>
+                            <input type="number" id="subtotal-1" name="detalle-subtotal" step="0.01" readonly>
+                        </div>
                     </div>
             </div>
         </fieldset>

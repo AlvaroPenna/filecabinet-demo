@@ -1,11 +1,21 @@
 package com.filecabinet.filecabinet.entidades;
 
-import jakarta.annotation.Nonnull;
-import jakarta.persistence.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
+
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Data

@@ -32,7 +32,7 @@
             </div>
             <div class="form-group">
                 <label for="proyecto">Proyecto:</label>
-                <input type="text" id="proyecto" name="proyecto" list="lista-proyectos" placeholder="Busca un proyecto..." required autocomplete="off">
+                <input type="text" id="proyecto" name="proyecto" list="lista-proyectos" placeholder="Busca un proyecto..." autocomplete="off">
                 <input type="hidden" id="proyecto_id" name="proyecto_id">
                 <datalist id="lista-proyectos"></datalist>
             </div>
@@ -40,10 +40,6 @@
                 <legend style="font-weight: 600; color: #2c3e50; margin-bottom: 15px;">Detalles / Líneas de Factura
                 </legend>
                 <div id="detallesContainer">
-                    <p id="detalle-note" style="font-size: 0.9em; color: #7f8c8d; margin-bottom: 15px;">
-                        *Nota: Esta sección ahora es dinámica. Se enviarán todos los detalles agregados.
-                    </p>
-
                     <div class="detalle-item" data-index="1">
                         <div class="form-group">
                             <label for="trabajo">Trabajo:</label>
@@ -56,11 +52,11 @@
                         <div class="form-group fila-calculos">
                             <div class="columna-dato">
                                 <label for="cantidad">Cantidad:</label>
-                                <input type="number" id="cantidad" name="detalle-cantidad" min="1">
+                                <input type="text" id="cantidad" name="detalle-cantidad" min="1" oninput="this.value = this.value.replace(/[^0-9.,]/g, '')">
                             </div>
                             <div class="columna-dato">
                                 <label for="precioUnitario">Precio Unitario:</label>
-                                <input type="number" id="precioUnitario" name="detalle-precioUnitario" step="0.01">
+                                <input type="text" id="precioUnitario" name="detalle-precioUnitario" step="0.01" oninput="this.value = this.value.replace(/[^0-9.,]/g, '')">
                             </div>
 
                             <div class="columna-dato" style="margin-bottom: 0;">

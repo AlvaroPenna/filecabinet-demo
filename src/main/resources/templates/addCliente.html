@@ -28,7 +28,7 @@
         </div>
         <div class="form-group">
             <label for="tel">Teléfono:</label>
-            <input type="text" id="tel" name="tel" required maxlength="9">
+            <input type="tel" id="tel" name="tel" required maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
         </div>
         <div class="form-group">
             <label for="direccion">Dirección:</label>
@@ -40,7 +40,7 @@
         </div>
         <div class="form-group">
             <label for="codigoPostal">Código Postal:</label>
-            <input type="text" id="codigoPostal" name="codigoPostal" required maxlength="5">
+            <input type="tel" id="codigoPostal" name="codigoPostal" required maxlength="5" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
         </div>
         <div class="form-actions">
             <button type="submit" class="btn-submit">Guardar Cliente</button>

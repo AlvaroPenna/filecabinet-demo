@@ -3,36 +3,8 @@ function volverAlIndex() {
 }
 document.addEventListener('DOMContentLoaded', () => {
 
-    function cargarClientes() {
-        fetch('http://localhost:8080/api/clientes')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error al obtener la lista de clientes');
-                }
-                return response.json();
-            })
-            .then(clientes => {
-                const selectCliente = document.getElementById('cliente');
-                selectCliente.innerHTML = '';
-
-                const defaultOption = document.createElement('option');
-                defaultOption.value = '';
-                defaultOption.textContent = 'Seleccione un cliente (opcional)';
-                selectCliente.appendChild(defaultOption);
-
-                clientes.forEach(cliente => {
-                    const option = document.createElement('option');
-                    option.value = cliente.id;
-                    option.textContent = cliente.cif + "-" + cliente.nombre + " " + cliente.apellidos;
-                    selectCliente.appendChild(option);
-                });
-            })
-            .catch(error => {
-                console.error('Error al cargar clientes:', error);
-            });
-    }
-
     cargarClientes();
+
     document.getElementById('proyecto-form').addEventListener('submit', function (event) {
         event.preventDefault();
 
@@ -42,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const codigoPostal = document.getElementById('codigoPostal').value;
         const fechaInicio = document.getElementById('fechaInicio').value;
         const fechaFin = document.getElementById('fechaFin').value;
-        const clienteId = document.getElementById('cliente').value;
+        const clienteId = document.getElementById('cliente_id').value;
 
         const proyectoData = {
             nombre: nombre,
@@ -96,3 +68,44 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     });
 });
+
+function cargarClientes() {
+    const inputVisible = document.getElementById('cliente');
+    const dataList = document.getElementById('lista-clientes');
+    const inputHiddenId = document.getElementById('cliente_id'); // Tu input oculto
+
+    fetch('http://localhost:8080/api/clientes')
+        .then(response => response.json())
+        .then(clientes => {
+            // 1. Limpiamos el datalist
+            dataList.innerHTML = '';
+
+            // 2. Llenamos el datalist
+            clientes.forEach(cliente => {
+                const option = document.createElement('option');
+                // IMPORTANTE: Definir el formato exacto del nombre
+                option.value = `${cliente.nombre} ${cliente.apellidos}`; 
+                dataList.appendChild(option);
+            });
+
+            // 3. Agregamos el evento "escucha" AQUÍ MISMO.
+            // Al estar dentro del .then, este evento puede "ver" la variable 'clientes'
+            inputVisible.addEventListener('input', function() {
+                const valorActual = this.value;
+
+                // Buscamos en el array 'clientes' alguien con ese mismo nombre
+                const clienteEncontrado = clientes.find(c => 
+                    `${c.nombre} ${c.apellidos}` === valorActual
+                );
+
+                if (clienteEncontrado) {
+                    // Si coincide, metemos el ID en el input oculto
+                    inputHiddenId.value = clienteEncontrado.id;
+                } else {
+                    // Si el usuario borra o escribe un nombre que no existe, limpiamos el ID
+                    inputHiddenId.value = '';
+                }
+            });
+        })
+        .catch(error => console.error('Error cargando clientes:', error));
+}

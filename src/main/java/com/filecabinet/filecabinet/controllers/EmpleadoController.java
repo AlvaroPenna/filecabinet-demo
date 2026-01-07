@@ -17,6 +17,8 @@ import com.filecabinet.filecabinet.config.CustomUserDetails;
 import com.filecabinet.filecabinet.dto.EmpleadoDto;
 import com.filecabinet.filecabinet.service.EmpleadoService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/trabajadores")
 public class EmpleadoController {
@@ -30,7 +32,7 @@ public class EmpleadoController {
     @GetMapping
     public List<EmpleadoDto> getAllTrabajadores(@AuthenticationPrincipal CustomUserDetails userDetails) {
         Long userId = userDetails.getUserId();
-        return empleadoService.getAllTrabajores(userId);
+        return empleadoService.getAllTrabajadores(userId);
     }
 
     @GetMapping("/{id}")
@@ -46,7 +48,7 @@ public class EmpleadoController {
 
     @PostMapping
     public ResponseEntity<EmpleadoDto> createTrabajador(
-            @RequestBody EmpleadoDto trabajadorDto,
+            @Valid @RequestBody EmpleadoDto trabajadorDto,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         Long userId = userDetails.getUserId();
@@ -56,7 +58,7 @@ public class EmpleadoController {
     @PutMapping("/{id}")
     public ResponseEntity<EmpleadoDto> updateTrabajador(
             @PathVariable Long id,
-            @RequestBody EmpleadoDto trabajadorDto,
+            @Valid @RequestBody EmpleadoDto trabajadorDto,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         Long userId = userDetails.getUserId();
