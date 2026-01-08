@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/addCliente.css">
+    <title>Añadir Nuevo Cliente</title>
+</head>
+<body>
+<div class="container">
+    <h2>Agregar Nuevo Cliente</h2>
+    <form id="cliente-form">
+        <div class="form-group">
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" required>
+        </div>
+        <div class="form-group">
+            <label for="apellidos">Apellidos:</label>
+            <input type="text" id="apellidos" name="apellidos" required>
+        </div>
+        <div class="form-group">
+            <label for="cif">Cif o Nif:</label>
+            <input type="text" id="cif" name="cif" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+            <label for="tel">Teléfono:</label>
+            <input type="tel" id="tel" name="tel" required maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+        </div>
+        <div class="form-group">
+            <label for="direccion">Dirección:</label>
+            <input type="text" id="direccion" name="direccion" required>
+        </div>
+        <div class="form-group">
+            <label for="ciudad">Ciudad:</label>
+            <input type="text" id="ciudad" name="ciudad" required>
+        </div>
+        <div class="form-group">
+            <label for="codigoPostal">Código Postal:</label>
+            <input type="tel" id="codigoPostal" name="codigoPostal" required maxlength="5" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn-submit">Guardar Cliente</button>
+            <button type="button" class="btn-volver" onclick="volverAlIndex()">Volver al Index</button>
+        </div>
+    </form>
+</div>
+<script src="/js/addCliente.js"></script>
+</body>
+</html>

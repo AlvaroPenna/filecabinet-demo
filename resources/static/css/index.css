@@ -1,0 +1,71 @@
+/* --- ESTILOS GENERALES Y FUENTES --- */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f7f6; /* Fondo gris claro suave */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+/* --- ESTILO DEL CONTENEDOR PRINCIPAL --- */
+.container {
+    background-color: #ffffff; /* Fondo blanco para el contenedor */
+    padding: 40px 60px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Sombra elegante */
+    text-align: center;
+    width: 100%;
+    max-width: 500px;
+}
+
+/* --- ESTILO DEL TÍTULO --- */
+.container h2 {
+    color: #2c3e50; /* Azul oscuro */
+    margin-bottom: 30px;
+    font-size: 1.8em;
+    border-bottom: 2px solid #3498db; /* Línea de color azul debajo del título */
+    padding-bottom: 10px;
+}
+
+/* --- ESTILO DEL GRUPO DE NAVEGACIÓN (BOTONES) --- */
+.nav-group {
+    display: flex;
+    flex-direction: column; /* Apilar los enlaces verticalmente */
+    gap: 15px; /* Espacio entre los botones */
+    margin-top: 20px;
+}
+
+/* --- ESTILO DE LOS BOTONES DE NAVEGACIÓN --- */
+.btn-submit {
+    display: block; /* Asegura que ocupen todo el ancho disponible */
+    padding: 15px 20px;
+    text-decoration: none; /* Quitar el subrayado de los enlaces */
+    color: #ffffff; /* Texto blanco */
+    background-color: #3498db; /* Azul primario */
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Efecto hover general para los botones */
+.btn-submit:hover {
+    background-color: #2980b9; /* Azul más oscuro al pasar el mouse */
+    transform: translateY(-2px); /* Pequeño levantamiento */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* --- ESTILO ESPECÍFICO PARA EL BOTÓN DE CERRAR SESIÓN --- */
+#salir {
+    background-color: #e74c3c; /* Rojo para el botón de salir */
+    margin-top: 25px; /* Más espacio para separarlo de los demás */
+}
+
+#salir:hover {
+    background-color: #c0392b; /* Rojo más oscuro al pasar el mouse */
+}

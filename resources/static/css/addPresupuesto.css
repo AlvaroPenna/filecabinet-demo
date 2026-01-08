@@ -1,0 +1,232 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    padding: 40px;
+    background-color: #eef2f5;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+}
+
+.container {
+    width: 100%;
+    max-width: 600px;
+    background: #ffffff;
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e6ed;
+}
+
+h2 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 30px;
+    font-weight: 600;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    box-sizing: border-box;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+    outline: none;
+}
+
+.form-actions {
+    display: flex;
+    /* Habilita el diseño flexible */
+    justify-content: space-between;
+    /* Distribuye el espacio entre los elementos */
+    gap: 10px;
+    /* Espacio entre los botones */
+    margin-top: 20px;
+    /* Separación de los elementos de arriba */
+}
+
+/* 2. Estilos para los botones (Modificado) */
+.btn-submit,
+.btn-volver {
+    /* IMPORTANTE: Quitar el width: 100%; */
+    /* width: 100%; <--- Eliminar o comentar esta línea */
+    flex-grow: 1;
+    /* Permite que ambos botones crezcan y compartan el espacio por igual */
+
+    padding: 14px;
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn-submit:hover,
+.btn-volver:hover {
+    background-color: #357bd9;
+    transform: translateY(-2px);
+}
+
+/* Estilos para la sección de detalles/mensajes */
+.detalle-item {
+    border: 1px solid #e0e6ed;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    background-color: #f7f9fb;
+}
+
+#message {
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Nuevo estilo para el botón de añadir detalle */
+.btn-secondary {
+    width: 100%;
+    padding: 12px;
+    background-color: #6c757d;
+    /* Gris secundario */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 5px;
+    margin-bottom: 20px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    transform: translateY(-1px);
+}
+
+.btn-secondary:active {
+    transform: translateY(0);
+}
+
+/* Estilo para el botón de eliminar detalle dentro del item */
+.btn-delete-detail {
+    float: right;
+    padding: 5px 10px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: normal;
+    transition: background-color 0.3s;
+}
+
+.btn-delete-detail:hover {
+    background-color: #c0392b;
+}
+
+.radio-group {
+    display: flex;
+    gap: 20px;
+}
+
+.radio-group label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.radio-group input[type="radio"] {
+    width: auto;
+    margin-right: 8px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: 2px solid #cbd5e0;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    transition: background-color 0.3s, border-color 0.3s;
+    position: relative;
+}
+
+.radio-group input[type="radio"]:checked {
+    border-color: #4a90e2;
+    background-color: #4a90e2;
+}
+
+.radio-group input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 8px;
+    height: 8px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.fila-calculos {
+    display: flex;
+    gap: 20px;
+    /* Espacio entre los campos */
+    align-items: flex-end;
+    /* Alinea abajo por si las etiquetas tienen distinta altura */
+}
+
+/* Esto asegura que cada columna ocupe el mismo ancho */
+.columna-dato {
+    flex: 1;
+    /* Ocupa el espacio disponible equitativamente */
+    display: flex;
+    flex-direction: column;
+    /* Pone el label encima del input */
+}
+
+/* Opcional: Para que el input ocupe todo el ancho de su columna */
+.columna-dato input {
+    width: 100%;
+    box-sizing: border-box;
+    /* Asegura que el padding no rompa el ancho */
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Para Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
