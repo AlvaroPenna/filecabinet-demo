@@ -16,24 +16,34 @@ public class ViewController {
         return "index";
     }
 
-    @GetMapping("/gastos")
+    @GetMapping("/gasto/list")
     public String mostrarListaGastos() {
-        return "gastos_list"; 
+        return "list-gasto"; 
+    }
+
+    @GetMapping("/gasto/put")
+    public String modificarGasto() {
+        return "putGasto"; 
     }
     
     @GetMapping("/gasto/new")
     public String mostrarFormularioGasto() {
         return "addGastos"; 
     }
-    
-    @GetMapping("/facturas")
-    public String mostrarListaFacturas() {
-        return "facturas_list"; 
-    }
 
     @GetMapping("/factura/new")
     public String mostrarFormularioFactura() { 
         return "addFactura";
+    }
+
+    @GetMapping("/factura/list")
+    public String mostrarFacturas() { 
+        return "list-factura";
+    }
+
+    @GetMapping("/factura/put")
+    public String ModificarFactura() { 
+        return "putFactura";
     }
 
     @GetMapping("/cliente/new")
@@ -59,6 +69,16 @@ public class ViewController {
     @GetMapping("/presupuesto/new")
     public String mostrarFormularioPresupuesto() {
         return "addPresupuesto";
+    }
+
+    @GetMapping("/presupuesto/list")
+    public String mostrarListadoPresupuesto() {
+        return "list-presupuesto";
+    }
+
+    @GetMapping("/presupuesto/put")
+    public String ModificarPresupuesto() { 
+        return "putPresupuesto";
     }
 
 }

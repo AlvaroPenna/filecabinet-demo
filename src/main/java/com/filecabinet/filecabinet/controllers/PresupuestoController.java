@@ -78,7 +78,6 @@ public class PresupuestoController {
     }
 
     @GetMapping("/exportar-excel/{id}")
-    // CORRECCIÓN: Nombre del método corregido
     public void exportarPresupuestoExcel(@PathVariable Long id, 
                                          HttpServletResponse response,
                                          @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {

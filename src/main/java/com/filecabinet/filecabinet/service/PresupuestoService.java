@@ -78,10 +78,8 @@ public class PresupuestoService {
         return toDto(savedPresupuesto);
     }
 
-    // SEGURIDAD: Ahora requiere userId para buscar el presupuesto a editar
     @Transactional
     public Optional<PresupuestoDto> updatePresupuesto(Long id, PresupuestoDto presupuestoDetails, Long userId){
-        // Usamos findByIdAndUsuarioId para asegurar que solo editamos si es nuestro
         return presupuestoRepository.findByIdAndUsuarioId(id, userId).map(presupuesto -> {
             
             presupuesto.setNumPresupuesto(presupuestoDetails.getNumPresupuesto());
@@ -91,10 +89,8 @@ public class PresupuestoService {
             presupuesto.setTotal_bruto(presupuestoDetails.getTotal_bruto());
             presupuesto.setTotal_iva(presupuestoDetails.getTotal_iva());
             presupuesto.setTotal_neto(presupuestoDetails.getTotal_neto());
-            // IMPORTANTE: Actualizar el tipo de IVA si viene en el DTO
             presupuesto.setTipo_iva(presupuestoDetails.getTipo_iva());
 
-            // Actualizar Cliente y Proyecto si han cambiado
             if(presupuestoDetails.getCliente_id() != null) {
                  presupuesto.setCliente(clienteRepository.findById(presupuestoDetails.getCliente_id()).orElse(null));
             }
@@ -102,43 +98,12 @@ public class PresupuestoService {
                  presupuesto.setProyecto(proyectoRepository.findById(presupuestoDetails.getProyecto_id()).orElse(null));
             }
 
-            // Lógica de actualización de detalles (Mantenida igual, solo aseguramos el padre)
-            List<DetalleDocumentoDto> detallesDto = presupuestoDetails.getDetalles();
-            if (detallesDto != null) {
-                // ... (Tu lógica de actualizar detalles existente está bien aquí) ...
-                // Para simplificar el ejemplo, he mantenido tu lógica original de detalles
-                // pero recuerda que al estar dentro del map(), ya estamos trabajando sobre el presupuesto seguro.
-                List<DetalleDocumento> detallesExistentes = presupuesto.getDetalles();
-                
-                // NOTA: Una estrategia más limpia suele ser borrar los viejos y poner los nuevos,
-                // pero tu lógica de actualización granular es válida si quieres mantener IDs.
-                
-                // Limpiamos la lista actual y repoblamos (Estrategia simple para evitar errores de huérfanos)
-                // O mantienes tu bucle for. Si tu bucle te funciona, déjalo así.
-                // Solo asegúrate de setear de nuevo la relación bidireccional.
-                
-                 for (DetalleDocumentoDto detalleDto : detallesDto) {
-                    Long detalleId = detalleDto.getId();
-                    if (detalleId != null) {
-                        Optional<DetalleDocumento> detalleOptional = detallesExistentes.stream()
-                        .filter(d -> d.getId() != null && d.getId().equals(detalleId))
-                        .findFirst();
-                        if(detalleOptional.isPresent()){
-                            DetalleDocumento detalle = detalleOptional.get();
-                            detalle.setTrabajo(detalleDto.getTrabajo());
-                            detalle.setDescripcion(detalleDto.getDescripcion());
-                            detalle.setCantidad(detalleDto.getCantidad());
-                            detalle.setPrecioUnitario(detalleDto.getPrecioUnitario());
-                            detalle.setSubTotal(detalleDto.getSubTotal()); // No olvides actualizar subtotal
-                        }
-                    } else {
-                        // Si no tiene ID, es un detalle nuevo añadido en la edición
-                        DetalleDocumento nuevoDetalle = toDetalleEntity(detalleDto);
-                        nuevoDetalle.setDocumentoComercial(presupuesto);
-                        detallesExistentes.add(nuevoDetalle);
-                    }
-                }
+            if(presupuestoDetails.getDetalles() != null){
+                presupuesto.getDetalles().clear();
+                List<DetalleDocumento> nuevosDetalles = mapDetallesToEntity(presupuestoDetails.getDetalles(), presupuesto);
+                presupuesto.getDetalles().addAll(nuevosDetalles);
             }
+
             return toDto(presupuestoRepository.save(presupuesto));
         });
     }

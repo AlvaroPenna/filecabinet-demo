@@ -34,9 +34,9 @@ public class FacturaController {
     // SEGURIDAD: Verifica que el ID pertenezca al usuario antes de devolverlo
     @GetMapping("/{id}")
     public ResponseEntity<FacturaDto> getFacturaById(
-            @PathVariable Long id, 
+            @PathVariable Long id,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        
+
         return facturaService.getFacturaByIdAndUserId(id, userDetails.getUserId())
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -47,7 +47,7 @@ public class FacturaController {
     public ResponseEntity<FacturaDto> createFactura(
             @Valid @RequestBody FacturaDto facturaDto,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        
+
         Long userId = userDetails.getUserId();
         FacturaDto newFactura = facturaService.createFactura(facturaDto, userId);
         return new ResponseEntity<>(newFactura, HttpStatus.CREATED);
@@ -56,11 +56,22 @@ public class FacturaController {
     @PutMapping("/{id}")
     // SEGURIDAD: Validamos datos y pasamos userId para asegurar propiedad
     public ResponseEntity<FacturaDto> updateFactura(
-            @PathVariable Long id, 
-            @Valid @RequestBody FacturaDto facturaDto, 
+            @PathVariable Long id,
+            @Valid @RequestBody FacturaDto facturaDto,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        
+
         return facturaService.updateFactura(id, facturaDto, userDetails.getUserId())
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<FacturaDto> patchFactura(
+            @PathVariable Long id,
+            @RequestBody FacturaDto facturaDto,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+                
+        return facturaService.patchFactura(id, facturaDto, userDetails.getUserId())
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -68,9 +79,9 @@ public class FacturaController {
     @DeleteMapping("/{id}")
     // SEGURIDAD: Solo borra si el usuario es dueño
     public ResponseEntity<Void> deleteFactura(
-            @PathVariable Long id, 
+            @PathVariable Long id,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        
+
         if (facturaService.deleteFactura(id, userDetails.getUserId())) {
             return ResponseEntity.noContent().build();
         } else {
@@ -80,7 +91,7 @@ public class FacturaController {
 
     @GetMapping("/exportar-excel/{id}")
     public void exportarFacturaExcel(
-            @PathVariable Long id, 
+            @PathVariable Long id,
             HttpServletResponse response,
             @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {
         // Este ya lo tenías seguro en el ejemplo anterior porque pasabas userDetails
