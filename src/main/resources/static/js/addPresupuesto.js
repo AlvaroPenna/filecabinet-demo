@@ -281,7 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function volverAlIndex() {
-    window.location.href = "/index";
+    window.location.href = "/presupuesto/list";
 }
 
 async function descargarExcel(idPresupuesto) {
@@ -305,7 +305,7 @@ async function descargarExcel(idPresupuesto) {
         // Creamos el link invisible para forzar la descarga
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', `Presupuesto_${idPresupuesto}.xlsx`); // Extensión .xlsx
+        link.setAttribute('download', `Presupuesto_${numPresupuesto}.xlsx`); // Extensión .xlsx
 
         document.body.appendChild(link);
         link.click();

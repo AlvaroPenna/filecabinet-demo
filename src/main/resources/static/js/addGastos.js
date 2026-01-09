@@ -1,5 +1,5 @@
 function volverAlIndex() {
-        window.location.href = "/index"; 
+        window.location.href = "/gasto/list"; 
 }
 document.addEventListener('DOMContentLoaded', () => {
     cargarClientes();

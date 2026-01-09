@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Presupuestos</title>
+    <link rel="stylesheet" href="/css/list-presupuesto.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <header class="header-listado">
+            <div class="titulo-con-volver">
+                <button onclick="volverAlIndex()" class="btn-volver" title="Volver al Inicio">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h1>Mis Presupuestos</h1>
+            </div>
+            <div class="buscador-container">
+                <i class="fas fa-search icono-lupa"></i>
+                <input type="text" id="inputBusqueda" placeholder="Buscar por nº, estado...">
+            </div>
+            <button onclick="irANuevoPresupuesto()" class="btn-nueva">
+                <i class="fas fa-plus"></i> Nuevo Presupuesto
+            </button>
+        </header>
+        <div class="table-container">
+            <table id="tablaPresupuestos">
+                <thead>
+                    <tr>
+                        <th>Nº Presupueto</th>
+                        <th>Cliente</th>
+                        <th>Proyecto</th>
+                        <th>Fecha</th>
+                        <th>Total Neto</th>
+                        <th>Estado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="listaPresupuestosBody">
+                </tbody>
+            </table>
+            <p id="mensajeVacio" style="display:none; text-align:center; margin-top: 20px;">No hay presupuestos
+                registrados.
+            </p>
+        </div>
+    </div>
+    <script src="/js/list-presupuesto.js"></script>
+</body>
+
+</html>

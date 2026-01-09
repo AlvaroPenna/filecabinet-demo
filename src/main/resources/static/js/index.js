@@ -29,16 +29,16 @@ function handleNavigation(event) {
     // 4. Determinar la ruta a la que debe ir el usuario
     switch (id) {
         case 'gastos':
-            targetUrl = '/gasto/new';
+            targetUrl = '/gasto/list';
             break;
         case 'presupuestos':
-            targetUrl = '/presupuesto/new';
+            targetUrl = '/presupuesto/list';
             break;
         case 'clientes':
             targetUrl = '/cliente/new';
             break;
         case 'facturas':
-            targetUrl = '/factura/new';
+            targetUrl = '/factura/list';
             break;
         case 'trabajador':
             targetUrl = '/empleado/new';

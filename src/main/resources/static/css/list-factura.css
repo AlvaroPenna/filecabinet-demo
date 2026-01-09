@@ -1,0 +1,167 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f9;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+
+/* --- HEADER Y BOTONES --- */
+
+.header-listado {
+    display: flex;
+    justify-content: space-between; /* Separa el bloque izq del bloque der */
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+/* Contenedor para el botón volver y el título juntos */
+.titulo-con-volver {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Espacio entre el botón y el título */
+}
+
+.titulo-con-volver h1 {
+    margin: 0; /* Importante para que se alinee verticalmente con el botón */
+}
+
+/* Estilo del botón Volver (Gris) */
+.btn-volver {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-volver:hover {
+    background-color: #5a6268;
+}
+
+/* Estilo del botón Nueva Factura (Verde) */
+.btn-nueva {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s;
+    display: flex; /* Para alinear icono y texto */
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-nueva:hover {
+    background-color: #218838;
+}
+
+.buscador-container {
+    position: relative;
+    margin: 0 15px; /* Espacio a los lados */
+}
+
+/* El campo de texto */
+.buscador-container input {
+    padding: 8px 10px 8px 35px; /* 35px a la izquierda para dejar sitio a la lupa */
+    border: 1px solid #ccc;
+    border-radius: 20px; /* Bordes redondeados */
+    outline: none;
+    font-size: 14px;
+    width: 250px; /* Ancho del buscador */
+    transition: border-color 0.3s;
+}
+
+.buscador-container input:focus {
+    border-color: #007bff; /* Color al hacer clic */
+}
+
+/* El icono de la lupa */
+.buscador-container .icono-lupa {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%); /* Centrar verticalmente */
+    color: #888;
+    pointer-events: none; /* Para que el clic pase a través del icono al input */
+}
+
+/* --- TABLA --- */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Badge de estado */
+.badge {
+    padding: 5px 10px;
+    border-radius: 12px;
+    background-color: #e2e3e5;
+    color: #383d41;
+    font-size: 0.85em;
+    font-weight: bold;
+}
+
+/* --- ACCIONES (ICONOS) --- */
+
+.actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.btn-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    transition: transform 0.2s;
+}
+
+.btn-icon:hover {
+    transform: scale(1.2);
+}
+
+/* Llave inglesa (Editar) */
+.btn-edit {
+    color: #007bff; /* Azul */
+}
+
+/* X Roja (Borrar) */
+.btn-delete {
+    color: #dc3545; /* Rojo */
+}
+
+.text-center {
+    text-align: center;
+}

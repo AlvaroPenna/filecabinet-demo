@@ -311,7 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function volverAlIndex() {
-    window.location.href = "/index";
+    window.location.href = "/factura/list";
 }
 
 async function descargarExcel(idFactura) {
@@ -335,7 +335,7 @@ async function descargarExcel(idFactura) {
         // Creamos el link invisible para forzar la descarga
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', `Factura_${idFactura}.xlsx`); // Extensión .xlsx
+        link.setAttribute('download', `Factura_${numFactura}.xlsx`); // Extensión .xlsx
 
         document.body.appendChild(link);
         link.click();
